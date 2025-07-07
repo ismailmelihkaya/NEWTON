@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Newton's Cradle - Matter.js</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #111;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="controls"
+      style="
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+        z-index: 10;
+      "
+    >
+      <button onclick="reset()">Sıfırla</button>
+      <select id="themeSelect" onchange="setTheme(this.value)">
+        <option value="#111">Karanlık</option>
+        <option value="#888">Gümüş</option>
+        <option value="#003366">Mavi</option>
+      </select>
+    </div>
+
+    <canvas id="world"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script>
+      function setTheme(color) {
+        render.options.background = color;
+      }
+
+      function reset() {
+        Body.setPosition(balls[0], { x: cradleX, y: cradleY + 200 });
+        Body.translate(balls[0], { x: -180, y: -100 });
+        Body.setVelocity(balls[0], { x: 0, y: 0 });
+      }
+
+      const {
+        Engine,
+        Render,
+        Runner,
+        World,
+        Bodies,
+        Body,
+        Mouse,
+        MouseConstraint,
+        Composites,
+        Constraint,
+      } = Matter;
+
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const engine = Engine.create();
+      const world = engine.world;
+      world.gravity.y = 1;
+
+      const canvas = document.getElementById("world");
+
+      const render = Render.create({
+        canvas: canvas,
+        engine: engine,
+        options: {
+          width,
+          height,
+          wireframes: false,
+          background: "#111",
+        },
+      });
+
+      Render.run(render);
+      const runner = Runner.create();
+      Runner.run(runner, engine);
+
+      // Beşik ayarları - Craddle Settings
+      const numBalls = 5;
+      const ballRadius = 25;
+      const cradleX = width / 2 - numBalls * ballRadius;
+      const cradleY = 100;
+      const spacing = ballRadius * 2;
+
+      const balls = [];
+      const constraints = [];
+
+      for (let i = 0; i < numBalls; i++) {
+        const ball = Bodies.circle(
+          cradleX + i * spacing,
+          cradleY + 200,
+          ballRadius,
+          {
+            label: "ball",
+            restitution: 1,
+            friction: 0,
+            frictionAir: 0.0001,
+            density: 0.8,
+            render: {
+              fillStyle: "#ccc",
+            },
+          }
+        );
+
+        // Ball sound
+
+        const collisionSound = new Audio(
+          "sounds/clink.mp3" // Replace with your sound file path
+        );
+        collisionSound.volume = 0.5;
+
+        Matter.Events.on(engine, "collisionStart", function (event) {
+          const pairs = event.pairs;
+          pairs.forEach((pair) => {
+            const labelA = pair.bodyA.label;
+            const labelB = pair.bodyB.label;
+
+            if (labelA === "ball" && labelB === "ball") {
+              collisionSound.currentTime = 0;
+              collisionSound.play();
+            }
+          });
+        });
+
+        const constraint = Constraint.create({
+          pointA: { x: cradleX + i * spacing, y: cradleY },
+          bodyB: ball,
+          pointB: { x: 0, y: 0 },
+          stiffness: 1,
+          length: 200,
+          render: {
+            strokeStyle: "#666",
+          },
+        });
+
+        balls.push(ball);
+        constraints.push(constraint);
+        World.add(world, [ball, constraint]);
+      }
+
+      // İlk topu yana çek (başlangıç etkisi)
+      // Pull the first ball to the left (to create initial effect)
+      Body.translate(balls[0], { x: -180, y: -100 });
+
+      // Fare ile kontrol (topları elle çekmek için)
+      // Mouse control to drag the balls
+      const mouse = Mouse.create(render.canvas);
+      const mouseConstraint = MouseConstraint.create(engine, {
+        mouse,
+        constraint: {
+          stiffness: 0.9,
+          render: {
+            visible: false,
+          },
+        },
+      });
+
+      World.add(world, mouseConstraint);
+      render.mouse = mouse;
+    </script>
+  </body>
+</html>

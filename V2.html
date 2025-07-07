@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Newton's Cradle</title>
+  <style>
+    canvas {
+      background: #111;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+<canvas id="cradleCanvas" width="800" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById('cradleCanvas');
+const ctx = canvas.getContext('2d');
+
+const NUM_BALLS = 5;
+const BALL_RADIUS = 20;
+const BALL_SPACING = BALL_RADIUS * 2 + 10;
+const ORIGIN_X = canvas.width / 2 - ((NUM_BALLS - 1) * BALL_SPACING) / 2;
+const ORIGIN_Y = 100;
+
+let balls = [];
+
+for (let i = 0; i < NUM_BALLS; i++) {
+  balls.push({
+    x: ORIGIN_X + i * BALL_SPACING,
+    y: ORIGIN_Y + 150,
+    angle: 0,
+    velocity: 0,
+    side: i === 0 ? -1 : 0, // Only the first ball is lifted
+  });
+}
+
+// Kinetik enerji aktarımını simüle etmek için basit fizik
+function updatePhysics() {
+  // Sadece ilk top sallanıyor
+  const ball = balls[0];
+  const gravity = 0.005;
+  const tension = 0.01;
+
+  ball.velocity += gravity * ball.side;
+  ball.angle += ball.velocity;
+
+  if (Math.abs(ball.angle) > 0.3) {
+    ball.side *= -1;
+    ball.velocity *= -1;
+    
+    // Son topa enerji aktarımı (çok basit şekilde)
+    balls[NUM_BALLS - 1].angle = ball.angle;
+    balls[NUM_BALLS - 1].side = -ball.side;
+  }
+
+  // Diğer topları düz tut
+  for (let i = 1; i < NUM_BALLS - 1; i++) {
+    balls[i].angle *= 0.98;
+  }
+}
+
+// Topları çiz
+function drawBalls() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = '#888';
+  ctx.fillStyle = '#ccc';
+
+  balls.forEach((ball, i) => {
+    const x = ORIGIN_X + i * BALL_SPACING + Math.sin(ball.angle) * 100;
+    const y = ORIGIN_Y + Math.cos(ball.angle) * 100;
+
+    // İp
+    ctx.beginPath();
+    ctx.moveTo(ORIGIN_X + i * BALL_SPACING, ORIGIN_Y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    // Top
+    ctx.beginPath();
+    ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+}
+
+function animate() {
+  updatePhysics();
+  drawBalls();
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>

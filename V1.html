@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Newton's Cradle</title>
+  <style>
+    canvas { background: #111; display: block; margin: auto; }
+  </style>
+</head>
+<body>
+<canvas id="cradle" width="600" height="400"></canvas>
+<script>
+const canvas = document.getElementById('cradle');
+const ctx = canvas.getContext('2d');
+
+const balls = [];
+const numBalls = 5;
+const length = 150;
+const radius = 15;
+const originY = 100;
+
+for (let i = 0; i < numBalls; i++) {
+  balls.push({
+    x0: 150 + i * (radius * 2 + 5),
+    angle: 0,
+    velocity: 0,
+    swinging: false
+  });
+}
+
+balls[0].angle = -Math.PI / 4; // sola çekilen ilk bilye
+balls[0].swinging = true;
+
+function drawBall(ball) {
+  const x = ball.x0 + length * Math.sin(ball.angle);
+  const y = originY + length * Math.cos(ball.angle);
+
+  ctx.beginPath();
+  ctx.moveTo(ball.x0, originY);
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = "#aaa";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fillStyle = "#ccc";
+  ctx.fill();
+}
+
+function updateBall(ball) {
+  if (!ball.swinging) return;
+  const g = 0.01;
+  ball.velocity += -g * Math.sin(ball.angle);
+  ball.angle += ball.velocity;
+  ball.velocity *= 0.999; // sürtünme efekti
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const ball of balls) {
+    updateBall(ball);
+    drawBall(ball);
+  }
+
+  // Basit çarpışma: ilk bilye ortadakilere çarpınca son bilyeye enerji ver
+  if (balls[0].angle > -0.02 && balls[0].swinging) {
+    balls[0].swinging = false;
+    balls[numBalls - 1].angle = Math.PI / 4;
+    balls[numBalls - 1].velocity = 0;
+    balls[numBalls - 1].swinging = true;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
