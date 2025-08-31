@@ -14,7 +14,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 9999 !important;
             display: none;
             width: 380px;
             height: 600px;
