@@ -152,7 +152,6 @@
         }
 
         .n8n-chat-widget .chat-message {
-            display:none;
             padding: 12px 16px;
             margin: 8px 0;
             border-radius: 12px;
