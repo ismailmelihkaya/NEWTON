@@ -152,6 +152,7 @@
         }
 
         .n8n-chat-widget .chat-message {
+            display:none;
             padding: 12px 16px;
             margin: 8px 0;
             border-radius: 12px;
@@ -296,8 +297,8 @@
             welcomeText: '',
             responseTimeText: '',
             poweredBy: {
-                text: 'Powered by n8n',
-                link: 'https://n8n.partnerlinks.io/m8a94i19zhqq?utm_source=nocodecreative.io'
+                text: ' ',
+                link: ''
             }
         },
         style: {
