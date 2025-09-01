@@ -252,6 +252,10 @@
             fill: currentColor;
         }
 
+        .chat-footer {
+            display: none !important;
+        }
+
         .n8n-chat-widget .chat-footer {
             padding: 8px;
             text-align: center;
