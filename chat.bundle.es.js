@@ -296,7 +296,7 @@
             welcomeText: '',
             responseTimeText: '',
             poweredBy: {
-                text: '',
+                text: 'Xynaptics',
                 link: ''
             }
         },
@@ -501,5 +501,6 @@
         });
     });
 })();
+
 
 
