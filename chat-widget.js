@@ -291,7 +291,7 @@
             route: ''
         },
         branding: {
-            logo: '',
+            logo: 'https://www.pacificachamber.com/wp-content/uploads/2021/09/pcc-nav-logo.png',
             name: '',
             welcomeText: '',
             responseTimeText: '',
