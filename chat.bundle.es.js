@@ -296,8 +296,8 @@
             welcomeText: '',
             responseTimeText: '',
             poweredBy: {
-                text: 'Xynaptics',
-                link: 'https://xynaptics.se'
+                text: '',
+                link: ''
             }
         },
         style: {
@@ -501,4 +501,5 @@
         });
     });
 })();
+
 
